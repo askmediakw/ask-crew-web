@@ -3,11 +3,13 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useEffect, useState } from 'react'
 import { X } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
 import { navItems } from '@/lib/nav'
 import { useExecMode } from '@/lib/exec-mode'
+import { getAuthUser } from '@/lib/auth'
 
 function NavList({ collapsed }: { collapsed: boolean }) {
   const pathname = usePathname()
@@ -99,6 +101,19 @@ function Brand({ collapsed }: { collapsed: boolean }) {
 function Profile({ collapsed }: { collapsed: boolean }) {
   const { execMode } = useExecMode()
   const { t } = useTranslation()
+  const [user, setUser] = useState<Record<string, unknown> | null>(null)
+
+  useEffect(() => {
+    setUser(getAuthUser())
+  }, [])
+
+  const userName = (user?.name || user?.full_name || user?.email || 'مستخدم') as string
+  const initials = userName
+    .split(' ')
+    .map((word) => word[0])
+    .slice(0, 2)
+    .join('')
+    .toUpperCase() || 'ع'
 
   return (
     <div className="border-t border-sidebar-border p-4">
@@ -117,11 +132,11 @@ function Profile({ collapsed }: { collapsed: boolean }) {
               : 'bg-gradient-to-br from-primary to-accent',
           )}
         >
-          ع
+          {initials}
         </div>
         {!collapsed && (
           <div className="min-w-0 leading-tight">
-            <p className="truncate text-sm font-semibold text-foreground">عامر سرور كامل الفضلي</p>
+            <p className="truncate text-sm font-semibold text-foreground">{userName}</p>
             <p
               className={cn(
                 'truncate text-xs',

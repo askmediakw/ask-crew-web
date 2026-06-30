@@ -60,7 +60,13 @@ type ApiResponse = ApiUser[] | { results: ApiUser[] }
 
 const mapApiUserToCrmUser = (apiUser: ApiUser): CrmUser => {
   const getInitials = (name: string) => {
-    return name.charAt(0).toUpperCase()
+    if (!name) return 'م'
+    return name
+      .split(' ')
+      .map((word) => word.charAt(0))
+      .slice(0, 2)
+      .join('')
+      .toUpperCase()
   }
 
   const getTierFromType = (type: string): Tier => {
@@ -83,11 +89,13 @@ const mapApiUserToCrmUser = (apiUser: ApiUser): CrmUser => {
     return dateJoined ? new Date(dateJoined).toLocaleDateString('ar-SA') : 'غير معروف'
   }
 
+  const userName = apiUser.fullname || apiUser.name || apiUser.email || 'مستخدم'
+
   return {
     id: apiUser.id,
-    name: apiUser.fullname,
+    name: userName,
     email: apiUser.email,
-    initials: getInitials(apiUser.fullname),
+    initials: getInitials(userName),
     status: getStatus(apiUser.is_active),
     twoFA: apiUser.is_verified,
     lastSeen: getLastSeen(apiUser.date_joined),

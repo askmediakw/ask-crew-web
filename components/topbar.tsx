@@ -1,12 +1,12 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { Bell, Menu, PanelRightClose, Search, CheckCheck, X, Sun, Moon, LogOut } from 'lucide-react'
+import { Bell, Menu, PanelRightClose, Search, CheckCheck, X, Sun, Moon, LogOut, User } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import { useExecMode } from '@/lib/exec-mode'
 import { useTheme } from '@/lib/theme'
-import { clearAuthToken } from '@/lib/auth'
+import { clearAuthToken, getAuthUser } from '@/lib/auth'
 import { RoleSimulator } from '@/components/dev/role-simulator'
 import { MockLiveToggle } from '@/components/dev/mock-live-toggle'
 import { LanguageSwitcher } from '@/components/settings/language-switcher'
@@ -55,6 +55,11 @@ export function Topbar({
   const [notifications, setNotifications] = useState(initialNotifications)
   const [open, setOpen] = useState(false)
   const wrapperRef = useRef<HTMLDivElement>(null)
+  const [user, setUser] = useState<Record<string, unknown> | null>(null)
+
+  useEffect(() => {
+    setUser(getAuthUser())
+  }, [])
 
   const handleLogout = () => {
     clearAuthToken()
@@ -279,9 +284,15 @@ export function Topbar({
       {/* Spacer pushes the group to the start (right in RTL) */}
       <div className="flex-1" />
 
-      {/* Mock vs Live (DX) + Theme toggle (#9) + Role simulator (#17) + Logout */}
+      {/* Mock vs Live (DX) + Theme toggle (#9) + User + Logout */}
       <div className="flex items-center gap-2">
-        <MockLiveToggle />
+        {execMode && (
+          <div className="flex items-center gap-2 rounded-full border border-destructive/30 bg-destructive/10 px-3 py-1.5">
+            <span className="text-xs font-bold text-destructive">#</span>
+            <span className="text-xs font-bold text-destructive">وضع اختبار</span>
+          </div>
+        )}
+        {/* <MockLiveToggle /> */}
         <LanguageSwitcher />
         <button
           onClick={toggleTheme}
@@ -290,7 +301,15 @@ export function Topbar({
         >
           {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
         </button>
-        <RoleSimulator />
+        {/* User info */}
+        {user && (
+          <div className="flex items-center gap-2 rounded-xl border border-border bg-white/5 px-3 py-2">
+            <User className="h-4 w-4 text-primary" />
+            <span className="text-sm font-semibold text-foreground">
+              {(user.name || user.full_name || user.email || 'مستخدم') as string}
+            </span>
+          </div>
+        )}
         <button
           onClick={handleLogout}
           className="rounded-xl border border-border bg-white/5 p-2.5 text-muted-foreground transition hover:bg-white/10 hover:text-destructive"

@@ -4,7 +4,7 @@ import { useState, type FormEvent } from 'react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { Lock, Mail, LogIn, AlertTriangle, CheckCircle2, Loader2 } from 'lucide-react'
-import { setAuthToken } from '@/lib/auth'
+import { setAuthToken, setAuthUser } from '@/lib/auth'
 import { useApi } from '@/lib/api'
 
 const DENIED_MESSAGE =
@@ -44,6 +44,12 @@ export function LoginForm() {
       const token = response.tokens?.access || response.token || response.access_token
       if (token) {
         setAuthToken(token)
+      }
+      if (response.user) {
+        setAuthUser(response.user as Record<string, unknown>)
+      } else {
+        // Fallback: save email as user name if user object not present
+        setAuthUser({ email, name: email.split('@')[0] })
       }
       setTimeout(() => {
         router.push('/dashboard')
