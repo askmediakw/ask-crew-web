@@ -245,6 +245,46 @@ export const apiServices = {
   updateContentCatalogItem: (id: number, data: unknown) => apiRequest(`/content-catalog/${id}/`, 'PUT', data),
   
   deleteContentCatalogItem: (id: number) => apiRequest(`/content-catalog/${id}/`, 'DELETE'),
+
+  // Movies
+  fetchMovies: () => apiRequest('/content/movies/', 'GET'),
+  fetchMovie: (id: number) => apiRequest(`/content/movies/${id}/`, 'GET'),
+  createMovie: (data: unknown) => apiRequest('/content/movies/', 'POST', data),
+  updateMovie: (id: number, data: unknown) => apiRequest(`/content/movies/${id}/`, 'PUT', data),
+  deleteMovie: (id: number) => apiRequest(`/content/movies/${id}/`, 'DELETE'),
+
+  // Series
+  fetchSeries: () => apiRequest('/content/series/', 'GET'),
+  fetchSeriesItem: (id: number) => apiRequest(`/content/series/${id}/`, 'GET'),
+  createSeries: (data: unknown) => apiRequest('/content/series/', 'POST', data),
+  updateSeries: (id: number, data: unknown) => apiRequest(`/content/series/${id}/`, 'PUT', data),
+  deleteSeries: (id: number) => apiRequest(`/content/series/${id}/`, 'DELETE'),
+
+  // Banners
+  fetchBanners: () => apiRequest('/content/banners/', 'GET'),
+  fetchBanner: (id: number) => apiRequest(`/content/banners/${id}/`, 'GET'),
+  createBanner: (data: unknown) => apiRequest('/content/banners/', 'POST', data),
+  updateBanner: (id: number, data: unknown) => apiRequest(`/content/banners/${id}/`, 'PUT', data),
+  deleteBanner: (id: number) => apiRequest(`/content/banners/${id}/`, 'DELETE'),
+
+  // Advertise
+  fetchAdvertises: () => apiRequest('/content/advertise/', 'GET'),
+  fetchAdvertise: (id: number) => apiRequest(`/content/advertise/${id}/`, 'GET'),
+  createAdvertise: (data: unknown) => apiRequest('/content/advertise/', 'POST', data),
+  updateAdvertise: (id: number, data: unknown) => apiRequest(`/content/advertise/${id}/`, 'PUT', data),
+  deleteAdvertise: (id: number) => apiRequest(`/content/advertise/${id}/`, 'DELETE'),
+
+  // Content Ratings
+  fetchContentRatings: () => apiRequest('/content/ratings/', 'GET'),
+  fetchContentRating: (id: number) => apiRequest(`/content/ratings/${id}/`, 'GET'),
+  createContentRating: (data: unknown) => apiRequest('/content/ratings/', 'POST', data),
+  updateContentRating: (id: number, data: unknown) => apiRequest(`/content/ratings/${id}/`, 'PUT', data),
+  deleteContentRating: (id: number) => apiRequest(`/content/ratings/${id}/`, 'DELETE'),
+
+  // Favorites
+  fetchFavorites: () => apiRequest('/content/favorites/', 'GET'),
+  addFavorite: (data: unknown) => apiRequest('/content/favorites/add/', 'POST', data),
+  removeFavorite: (data: unknown) => apiRequest('/content/favorites/remove/', 'POST', data),
 }
 
 // Default export for easier import

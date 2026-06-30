@@ -234,6 +234,13 @@ export function PostersHub() {
             <Plus className="h-4 w-4" />
             إضافة بوستر
           </button>
+          <button
+            onClick={addNewPoster}
+            className="flex items-center justify-center rounded-xl border border-border bg-secondary/60 p-2.5 text-muted-foreground hover:bg-secondary hover:text-foreground transition"
+            title="رفع ملف"
+          >
+            <UploadCloud className="h-5 w-5" />
+          </button>
           <div className="relative w-full md:w-72">
             <Search className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <input
@@ -305,47 +312,6 @@ export function PostersHub() {
           </div>
         </div>
       )}
-
-      {/* Upload zone */}
-      <div
-        onDragOver={(e) => {
-          e.preventDefault()
-          setDragging(true)
-        }}
-        onDragLeave={() => setDragging(false)}
-        onDrop={(e) => {
-          e.preventDefault()
-          setDragging(false)
-        }}
-        className={cn(
-          'rounded-3xl border-2 border-dashed p-10 text-center transition-all duration-300',
-          dragging
-            ? cn(accentBorder, execMode ? 'bg-destructive/10' : 'bg-primary/10', 'scale-[1.01]')
-            : 'border-border bg-secondary/30 hover:bg-secondary/50',
-        )}
-      >
-        <div
-          className={cn(
-            'mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full',
-            execMode ? 'bg-destructive/20 text-destructive' : 'bg-primary/20 text-primary',
-          )}
-        >
-          <UploadCloud className="h-8 w-8" />
-        </div>
-        <h3 className="mb-2 text-lg font-black text-foreground">اسحب وأفلت المجلدات هنا</h3>
-        <p className="mx-auto mb-4 max-w-md text-sm text-muted-foreground">
-          أو اضغط لتحديد الملفات (يدعم التحويل التلقائي لصيغة WebP لتسريع المنصة)
-        </p>
-        <button
-          onClick={addNewPoster}
-          className={cn(
-            'rounded-xl px-6 py-2 font-bold text-white shadow-lg transition-all hover:opacity-90',
-            execMode ? 'bg-destructive glow-alert' : 'bg-primary glow-brand',
-          )}
-        >
-          استعراض الملفات
-        </button>
-      </div>
 
       {/* Select all */}
       <div className="flex items-center gap-3">
