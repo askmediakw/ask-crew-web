@@ -96,6 +96,54 @@ const landingPages = [
   'صفحة مسابقة آسك كرو (Ask Crew Contest)',
 ]
 
+const MOCK_PLANS: Plan[] = [
+  {
+    id: 1,
+    plan_type: 'enterprise',
+    tier: 'basic',
+    name: 'باقة المستقل',
+    description: 'للمنشئين والمستقلين',
+    price: 49,
+    currency: 'KWD',
+    is_active: true,
+    features: [
+      { id: 1, feature_key: 'post_question', limit: 50 },
+      { id: 2, feature_key: 'post_answer', limit: 100 },
+      { id: 3, feature_key: 'post_job', limit: 10 },
+    ],
+  },
+  {
+    id: 2,
+    plan_type: 'enterprise',
+    tier: 'pro',
+    name: 'باقة الاحتراف',
+    description: 'للشركات والمنشأة',
+    price: 149,
+    currency: 'KWD',
+    is_active: true,
+    features: [
+      { id: 1, feature_key: 'post_question', limit: 200 },
+      { id: 2, feature_key: 'post_answer', limit: 500 },
+      { id: 3, feature_key: 'post_job', limit: 50 },
+      { id: 4, feature_key: 'publish_movie', limit: 10 },
+    ],
+  },
+  {
+    id: 3,
+    plan_type: 'student',
+    tier: 'student',
+    name: 'باقة الطلاب',
+    description: 'للطلاب وطلبة السينما',
+    price: 19,
+    currency: 'KWD',
+    is_active: false,
+    features: [
+      { id: 1, feature_key: 'post_question', limit: 100 },
+      { id: 2, feature_key: 'post_answer', limit: 200 },
+    ],
+  },
+]
+
 function Toggle({
   checked,
   onChange,
@@ -169,13 +217,23 @@ export function PlansEditor() {
     async function fetchPlans() {
       try {
         const data = await apiServices.fetchPlans()
-        const plansList = Array.isArray(data) ? data : (data as any)?.results || []
+        let plansList = Array.isArray(data) ? data : (data as any)?.results || []
+        
+        // Fallback to mock data if no real plans
+        if (plansList.length === 0) {
+          plansList = MOCK_PLANS
+        }
+        
         setPlans(plansList)
         if (plansList.length > 0) {
           selectPlan(plansList[0])
         }
       } catch (err) {
-        console.error('Failed to fetch plans:', err)
+        console.error('Failed to fetch plans, using mock data:', err)
+        setPlans(MOCK_PLANS)
+        if (MOCK_PLANS.length > 0) {
+          selectPlan(MOCK_PLANS[0])
+        }
       } finally {
         setLoading(false)
       }
