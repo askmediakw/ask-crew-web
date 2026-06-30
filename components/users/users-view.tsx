@@ -28,7 +28,7 @@ import { TalentProfileContent, talentProfileOf } from '@/components/users/talent
 import { UserDetailsPanel } from '@/components/users/user-details-panel'
 import { DualFlag, PurchasingPowerBanner } from '@/components/shared/geo-widgets'
 import { useModal } from '@/lib/modal'
-import { useApi } from '@/lib/api'
+import api from '@/lib/api'
 
 type CrmUser = {
   id: number
@@ -110,7 +110,6 @@ const statusMeta: Record<CrmUser['status'], { label: string; dot: string; text: 
 export function UsersView() {
   const { execMode } = useExecMode()
   const { openModal } = useModal()
-  const { request } = useApi()
   const [users, setUsers] = useState<CrmUser[]>([])
   const [query, setQuery] = useState('')
   const [sentLink, setSentLink] = useState<number | null>(null)
@@ -125,7 +124,7 @@ export function UsersView() {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await request('/profiles/', 'GET') as ApiResponse
+        const response = await api.fetchUsers() as ApiResponse
         console.log('Users API response:', response)
         const apiUsers = Array.isArray(response) ? response : response.results
         const crmUsers = apiUsers?.map(mapApiUserToCrmUser) || []
@@ -137,32 +136,41 @@ export function UsersView() {
       }
     }
     fetchUsers()
-  }, [request])
+  }, [])
 
   const sendMagicLink = (id: number) => {
     setSentLink(id)
     setTimeout(() => setSentLink((curr) => (curr === id ? null : curr)), 2000)
   }
 
-  const addUser = () => {
-    const num = users.length + 1
-    setUsers((prev) => [
-      {
-        id: Date.now(),
-        name: `مستخدم جديد ${num}`,
-        email: `user${num}@example.com`,
-        initials: 'ج',
-        status: 'idle',
-        twoFA: false,
-        lastSeen: 'لم يسجل دخول',
-        events: 0,
-        tier: 'Beginner',
-      },
-      ...prev,
-    ])
+  const addUser = async () => {
+    try {
+      // Create a basic user first
+      const newUser = await api.createUser({
+        email: `user${Date.now()}@example.com`,
+        password: 'temp123456',
+        fullname: 'مستخدم جديد',
+        type: 'viewer',
+        is_active: true,
+      })
+      // Refresh the user list
+      const response = await api.fetchUsers() as ApiResponse
+      const apiUsers = Array.isArray(response) ? response : response.results
+      const crmUsers = apiUsers?.map(mapApiUserToCrmUser) || []
+      setUsers(crmUsers)
+    } catch (error) {
+      console.error('Failed to add user:', error)
+    }
   }
 
-  const deleteUser = (id: number) => setUsers((prev) => prev.filter((u) => u.id !== id))
+  const deleteUser = async (id: number) => {
+    try {
+      await api.deleteUser(id)
+      setUsers((prev) => prev.filter((u) => u.id !== id))
+    } catch (error) {
+      console.error('Failed to delete user:', error)
+    }
+  }
 
   const handleDrop = (targetId: number) => {
     if (dragId === null || dragId === targetId) return setDragId(null)

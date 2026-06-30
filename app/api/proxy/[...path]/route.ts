@@ -38,6 +38,8 @@ async function handleRequest(request: NextRequest, method: string) {
   const searchParams = request.nextUrl.searchParams.toString()
   const url = `${BACKEND_URL}${path}${searchParams ? `?${searchParams}` : ''}`
 
+  console.log('Proxying request:', { method, path, url })
+
   const headers: HeadersInit = {
     'Content-Type': 'application/json',
   }
@@ -63,6 +65,8 @@ async function handleRequest(request: NextRequest, method: string) {
       body,
     })
 
+    console.log('Backend response status:', response.status)
+    
     const data = await response.text()
 
     return new NextResponse(data, {
@@ -75,6 +79,7 @@ async function handleRequest(request: NextRequest, method: string) {
       },
     })
   } catch (error) {
+    console.error('Proxy error:', error)
     return new NextResponse(JSON.stringify({ error: 'فشل الاتصال بالخادم' }), {
       status: 500,
       headers: {

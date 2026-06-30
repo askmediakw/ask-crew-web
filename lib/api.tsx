@@ -172,20 +172,20 @@ export const apiServices = {
   login: (email: string, password: string) =>
     apiRequest<{ tokens: { access: string }, user: any }>('/auth/login', 'POST', { email, password }),
 
-  // GET /auth/plans → returns all plans
-  fetchPlans: () => apiRequest('/auth/plans', 'GET'),
+  // GET /plans → returns all plans
+  fetchPlans: () => apiRequest('/plans', 'GET'),
 
-  // GET /auth/plans/:id → returns single plan
-  fetchPlan: (id: string) => apiRequest(`/auth/plans/${id}`, 'GET'),
+  // GET /plans/:id → returns single plan
+  fetchPlan: (id: string) => apiRequest(`/plans/${id}`, 'GET'),
 
-  // POST /auth/plans/ → create plan
-  createPlan: (data: unknown) => apiRequest('/auth/plans', 'POST', data),
+  // POST /plans/ → create plan
+  createPlan: (data: unknown) => apiRequest('/plans', 'POST', data),
 
-  // PUT /auth/plans/:id → update plan
-  updatePlan: (id: string | number, data: unknown) => apiRequest(`/auth/plans/${id}`, 'PUT', data),
+  // PUT /plans/:id → update plan
+  updatePlan: (id: string | number, data: unknown) => apiRequest(`/plans/${id}`, 'PUT', data),
 
-  // DELETE /auth/plans/:id → delete plan
-  deletePlan: (id: string | number) => apiRequest(`/auth/plans/${id}`, 'DELETE'),
+  // DELETE /plans/:id → delete plan
+  deletePlan: (id: string | number) => apiRequest(`/plans/${id}`, 'DELETE'),
 
   // TODO: BACKEND - GET /analytics/summary → { mrr, churnRate, activeUsers }
   fetchAnalytics: () =>
@@ -200,8 +200,20 @@ export const apiServices = {
   // TODO: BACKEND - DELETE /companies/:id
   deleteCompany: (id: number) => apiRequest(`/companies/${id}`, 'DELETE'),
 
-  // TODO: BACKEND - GET /users
-  fetchUsers: () => apiRequest('/users', 'GET'),
+  // BACKEND - GET /profiles
+  fetchUsers: () => apiRequest('/profiles', 'GET'),
+
+  // BACKEND - GET /profiles/:id
+  fetchUser: (id: number) => apiRequest(`/profiles/${id}`, 'GET'),
+
+  // BACKEND - POST /profiles
+  createUser: (data: unknown) => apiRequest('/profiles', 'POST', data),
+
+  // BACKEND - PUT /profiles/:id
+  updateUser: (id: number, data: unknown) => apiRequest(`/profiles/${id}`, 'PUT', data),
+
+  // BACKEND - DELETE /profiles/:id
+  deleteUser: (id: number) => apiRequest(`/profiles/${id}`, 'DELETE'),
 
   // TODO: BACKEND - POST /plans/clone
   clonePlan: (planData: unknown) => apiRequest('/plans/clone', 'POST', planData),
@@ -222,3 +234,6 @@ export const apiServices = {
   // TODO: BACKEND - POST /auth/force-logout
   forceLogoutUser: (userId: number) => apiRequest('/auth/force-logout', 'POST', { userId }),
 }
+
+// Default export for easier import
+export default apiServices
