@@ -22,6 +22,17 @@ export async function DELETE(request: NextRequest) {
   return handleRequest(request, 'DELETE')
 }
 
+export async function OPTIONS(request: NextRequest) {
+  return new NextResponse(null, {
+    status: 200,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, PUT, PATCH, DELETE, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    },
+  })
+}
+
 async function handleRequest(request: NextRequest, method: string) {
   const path = request.nextUrl.pathname.replace('/api/proxy', '')
   const searchParams = request.nextUrl.searchParams.toString()
