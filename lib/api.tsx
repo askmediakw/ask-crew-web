@@ -179,22 +179,22 @@ export function useApi() {
 export const apiServices = {
   // POST /auth/login  → returns { tokens: { access: string }, user: any }
   login: (email: string, password: string) =>
-    apiRequest<{ tokens: { access: string }; user: any }>('/auth/login', 'POST', { email, password }),
+    apiRequest<{ tokens: { access: string }, user: any }>('/auth/login', 'POST', { email, password }),
 
-  // GET /plans → returns all plans
-  fetchPlans: () => apiRequest('/plans/', 'GET'),
+  // GET /auth/plans → returns all plans
+  fetchPlans: () => apiRequest('/auth/plans', 'GET'),
 
-  // GET /plans/:id → returns single plan
-  fetchPlan: (id: string) => apiRequest(`/plans/${id}/`, 'GET'),
+  // GET /auth/plans/:id → returns single plan
+  fetchPlan: (id: string) => apiRequest(`/auth/plans/${id}`, 'GET'),
 
-  // POST /plans/ → create plan
-  createPlan: (data: unknown) => apiRequest('/plans/', 'POST', data),
+  // POST /auth/plans/ → create plan
+  createPlan: (data: unknown) => apiRequest('/auth/plans', 'POST', data),
 
-  // PUT /plans/:id → update plan
-  updatePlan: (id: string | number, data: unknown) => apiRequest(`/plans/${id}/`, 'PUT', data),
+  // PUT /auth/plans/:id → update plan
+  updatePlan: (id: string | number, data: unknown) => apiRequest(`/auth/plans/${id}`, 'PUT', data),
 
-  // DELETE /plans/:id → delete plan
-  deletePlan: (id: string | number) => apiRequest(`/plans/${id}/`, 'DELETE'),
+  // DELETE /auth/plans/:id → delete plan
+  deletePlan: (id: string | number) => apiRequest(`/auth/plans/${id}`, 'DELETE'),
 
   // TODO: BACKEND - GET /analytics/summary → { mrr, churnRate, activeUsers }
   fetchAnalytics: () =>
