@@ -35,8 +35,8 @@ type Plan = {
   plan_type: 'enterprise' | 'student'
   tier: string
   name: string
-  description?: string
-  price: number
+  description?: string | null
+  price: string | number
   currency: string
   is_active: boolean
   features: PlanFeature[]
@@ -168,8 +168,11 @@ export function PlansEditor() {
   useEffect(() => {
     async function fetchPlans() {
       try {
+        console.log('Fetching plans...')
         const data = await apiServices.fetchPlans()
+        console.log('API Response:', data)
         const plansList = Array.isArray(data) ? data : (data as any)?.results || []
+        console.log('Plans list:', plansList)
         setPlans(plansList)
         if (plansList.length > 0) {
           selectPlan(plansList[0])
