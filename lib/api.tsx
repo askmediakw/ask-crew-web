@@ -233,6 +233,18 @@ export const apiServices = {
 
   // TODO: BACKEND - POST /auth/force-logout
   forceLogoutUser: (userId: number) => apiRequest('/auth/force-logout', 'POST', { userId }),
+  
+  // Content Catalog (Posters)
+  fetchContentCatalog: (page: number = 1, pageSize: number = 10) => 
+    apiRequest(`/content-catalog?page=${page}&page_size=${pageSize}`, 'GET'),
+  
+  fetchContentCatalogItem: (id: number) => apiRequest(`/content-catalog/${id}/`, 'GET'),
+  
+  createContentCatalogItem: (data: unknown) => apiRequest('/content-catalog/', 'POST', data),
+  
+  updateContentCatalogItem: (id: number, data: unknown) => apiRequest(`/content-catalog/${id}/`, 'PUT', data),
+  
+  deleteContentCatalogItem: (id: number) => apiRequest(`/content-catalog/${id}/`, 'DELETE'),
 }
 
 // Default export for easier import
