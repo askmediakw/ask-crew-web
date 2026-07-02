@@ -167,10 +167,44 @@ export function useApi() {
 // thin wrapper around apiRequest so the call sites read like business actions.
 // The TODO comment above each one is the exact route + verb to implement.
 // ============================================================================
+// Booking Item Type
+export interface BookingItem {
+  id: number;
+  name: string;
+  quantity: number;
+  description?: string;
+  price_per_day: string;
+  location: string;
+  type: string;
+  image?: string;
+  is_active: boolean;
+  is_approved: boolean;
+  approved_at?: string;
+  approved_by?: number;
+  approved_by_email?: string;
+  approved_by_fullname?: string;
+  start_date?: string;
+  end_date?: string;
+  created_at: string;
+  updated_at: string;
+  created_by?: number;
+  created_by_email?: string;
+  created_by_fullname?: string;
+  created_by_rating_count?: number;
+  created_by_rating_mean?: number;
+}
+
 export const apiServices = {
   // POST /auth/login  → returns { tokens: { access: string }, user: any }
   login: (email: string, password: string) =>
     apiRequest<{ tokens: { access: string }, user: any }>('/auth/login', 'POST', { email, password }),
+
+  // Booking Items
+  fetchBookingItems: () => apiRequest<BookingItem[]>('/booking/items/'),
+  fetchBookingItem: (id: number) => apiRequest<BookingItem>(`/booking/items/${id}/`),
+  createBookingItem: (data: Partial<BookingItem>) => apiRequest<BookingItem>('/booking/items/', 'POST', data),
+  updateBookingItem: (id: number, data: Partial<BookingItem>) => apiRequest<BookingItem>(`/booking/items/${id}/`, 'PUT', data),
+  deleteBookingItem: (id: number) => apiRequest<void>(`/booking/items/${id}/`, 'DELETE'),
 
   // GET /plans → returns all plans
   fetchPlans: () => apiRequest('/plans', 'GET'),
