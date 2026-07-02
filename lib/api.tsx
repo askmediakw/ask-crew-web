@@ -194,6 +194,27 @@ export interface BookingItem {
   created_by_rating_mean?: number;
 }
 
+// Booking Type
+export interface Booking {
+  id: number;
+  item: number;
+  item_name: string;
+  user: number;
+  user_email: string;
+  user_fullname: string;
+  user_photo?: string;
+  user_rating_count?: number;
+  user_rating_mean?: number;
+  status: string;
+  start_date: string;
+  end_date: string;
+  quantity: number;
+  created_at: string;
+  updated_at: string;
+  is_paid?: boolean;
+  payment_amount?: number;
+}
+
 export const apiServices = {
   // POST /auth/login  → returns { tokens: { access: string }, user: any }
   login: (email: string, password: string) =>
@@ -205,6 +226,13 @@ export const apiServices = {
   createBookingItem: (data: Partial<BookingItem>) => apiRequest<BookingItem>('/booking/items/', 'POST', data),
   updateBookingItem: (id: number, data: Partial<BookingItem>) => apiRequest<BookingItem>(`/booking/items/${id}/`, 'PUT', data),
   deleteBookingItem: (id: number) => apiRequest<void>(`/booking/items/${id}/`, 'DELETE'),
+
+  // Bookings
+  fetchBookings: () => apiRequest<Booking[]>('/booking/bookings/'),
+  fetchBooking: (id: number) => apiRequest<Booking>(`/booking/bookings/${id}/`),
+  createBooking: (data: Partial<Booking>) => apiRequest<Booking>('/booking/bookings/', 'POST', data),
+  updateBooking: (id: number, data: Partial<Booking>) => apiRequest<Booking>(`/booking/bookings/${id}/`, 'PUT', data),
+  deleteBooking: (id: number) => apiRequest<void>(`/booking/bookings/${id}/`, 'DELETE'),
 
   // GET /plans → returns all plans
   fetchPlans: () => apiRequest('/plans', 'GET'),
