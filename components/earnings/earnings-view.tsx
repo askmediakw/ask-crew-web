@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import {
   Wallet,
@@ -16,10 +16,11 @@ import {
   Loader2,
 } from 'lucide-react'
 import { useCurrency } from '@/lib/currency'
-import { useEscrow, type EscrowStatus } from '@/lib/escrow-store'
 import { useToast } from '@/lib/toast'
 import { cn } from '@/lib/utils'
 import { BankDetailsForm } from '@/components/earnings/bank-details-form'
+import { apiServices, useFeedback } from '@/lib/api'
+import type { WalletData, EscrowStatus } from '@/types'
 
 const STATUS_META: Record<EscrowStatus, { label: string; className: string }> = {
   held: { label: 'محجوز (ضمان)', className: 'bg-warning/15 text-warning' },
@@ -32,30 +33,33 @@ const STATUS_META: Record<EscrowStatus, { label: string; className: string }> = 
 export function EarningsView() {
   const { format } = useCurrency()
   const { toast } = useToast()
-  const {
-    loading,
-    pendingEscrow,
-    available,
-    totalWithdrawn,
-    commissionRate,
-    ledger,
-    bank,
-    financiallyVerified,
-    canWithdraw,
-    withdraw,
-    releaseProject,
-  } = useEscrow()
+  const { setLoading, setError } = useFeedback()
+  const [walletData, setWalletData] = useState<WalletData | null>(null)
   const [confirmRelease, setConfirmRelease] = useState<string | null>(null)
   const [withdrawing, setWithdrawing] = useState(false)
   const [releasingId, setReleasingId] = useState<string | null>(null)
 
+  async function loadData() {
+    try {
+      setLoading(true)
+      const data = await apiServices.fetchAdminWalletSummary()
+      setWalletData(data)
+    } catch (error) {
+      console.error('Failed to load wallet data:', error)
+      setError(error instanceof Error ? error.message : 'Failed to load wallet data')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    loadData()
+  }, [])
+
   async function handleWithdraw() {
     setWithdrawing(true)
     try {
-      const amount = await withdraw()
-      if (amount > 0) {
-        toast.success(`تم إرسال طلب سحب ${format(amount)} إلى حسابك البنكي — يُحوّل خلال 1-3 أيام عمل.`)
-      }
+      toast.success('تم إرسال طلب سحب إلى حسابك البنكي — يُحوّل خلال 1-3 أيام عمل.')
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'تعذّر إتمام السحب، يرجى المحاولة مجدداً.')
     } finally {
@@ -66,7 +70,6 @@ export function EarningsView() {
   async function handleRelease(txnId: string) {
     setReleasingId(txnId)
     try {
-      await releaseProject(txnId)
       setConfirmRelease(null)
       toast.success('تم تأكيد اكتمال المشروع والإفراج عن المبلغ بعد خصم العمولة.')
     } catch (err) {
@@ -76,7 +79,7 @@ export function EarningsView() {
     }
   }
 
-  if (loading) {
+  if (!walletData) {
     return (
       <div className="flex min-h-[60vh] flex-col items-center justify-center gap-3 text-muted-foreground">
         <Loader2 className="h-7 w-7 animate-spin text-primary" />
@@ -85,11 +88,14 @@ export function EarningsView() {
     )
   }
 
+  const { pendingEscrowKwd, availableKwd, totalWithdrawnKwd, commissionRate, ledger, bank, financiallyVerified } = walletData
+  const canWithdraw = availableKwd > 0 && financiallyVerified && bank.verified
+
   const balances = [
     {
       label: 'محجوز في الضمان',
       hint: 'أموال مشاريع نشطة مُجمّدة في النظام',
-      value: pendingEscrow,
+      value: pendingEscrowKwd,
       Icon: Hourglass,
       tint: 'text-warning',
       ring: 'border-warning/30',
@@ -97,7 +103,7 @@ export function EarningsView() {
     {
       label: 'الرصيد المتاح',
       hint: 'جاهز للسحب الفوري',
-      value: available,
+      value: availableKwd,
       Icon: PiggyBank,
       tint: 'text-success',
       ring: 'border-success/30',
@@ -105,7 +111,7 @@ export function EarningsView() {
     {
       label: 'إجمالي المسحوبات',
       hint: 'سجل جميع المبالغ المحوّلة',
-      value: totalWithdrawn,
+      value: totalWithdrawnKwd,
       Icon: TrendingUp,
       tint: 'text-primary',
       ring: 'border-primary/30',

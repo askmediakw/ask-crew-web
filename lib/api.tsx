@@ -5,6 +5,7 @@ import { CONFIG } from '@/lib/config'
 import { getAuthToken, clearAuthToken } from '@/lib/auth'
 import { recordApiCall } from '@/lib/dev-bus'
 import { getMockMode } from '@/lib/mock-mode'
+import { WalletData } from '@/types'
 
 // ============================================================================
 // GLOBAL FEEDBACK CONTEXT (loading overlay + error toast)
@@ -521,6 +522,14 @@ export const apiServices = {
   createPointsHistory: (data: Partial<PointsHistoryType>) => apiRequest<PointsHistoryType>('/reward/points-history/', 'POST', data),
   updatePointsHistory: (id: number, data: Partial<PointsHistoryType>) => apiRequest<PointsHistoryType>(`/reward/points-history/${id}/`, 'PUT', data),
   deletePointsHistory: (id: number) => apiRequest<void>(`/reward/points-history/${id}/`, 'DELETE'),
+
+  // Wallets
+  fetchWallets: () => apiRequest<WalletType[]>('/payment/wallets/'),
+  fetchWallet: (id: number) => apiRequest<WalletType>(`/payment/wallets/${id}/`),
+  createWallet: (data: Partial<WalletType>) => apiRequest<WalletType>('/payment/wallets/', 'POST', data),
+  updateWallet: (id: number, data: Partial<WalletType>) => apiRequest<WalletType>(`/payment/wallets/${id}/`, 'PUT', data),
+  deleteWallet: (id: number) => apiRequest<void>(`/payment/wallets/${id}/`, 'DELETE'),
+  fetchAdminWalletSummary: () => apiRequest<WalletData>('/payment/wallet/admin-summary'),
 }
 
 // Reward Types
@@ -554,6 +563,16 @@ export interface PointsHistoryType {
   points: number;
   created_at: string;
   updated_at: string;
+}
+
+// Wallet Type
+export interface WalletType {
+  id: number;
+  user_email: string;
+  user_fullname: string;
+  user_type: string;
+  wallet: string;
+  points: number;
 }
 
 // Default export for easier import
