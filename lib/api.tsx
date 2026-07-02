@@ -215,6 +215,69 @@ export interface Booking {
   payment_amount?: number;
 }
 
+// Payment Types
+export interface Payment {
+  id: number;
+  user: number;
+  user_email: string;
+  user_fullname: string;
+  charge_id: string;
+  amount: string;
+  currency: string;
+  description: string;
+  used_points: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ContentPayment {
+  id: number;
+  user: number;
+  user_email: string;
+  user_fullname: string;
+  content_type: string;
+  object_id: number;
+  amount: string;
+  currency: string;
+  description: string;
+  charge_id?: string;
+  used_points: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface BookingPayment {
+  id: number;
+  booking: number;
+  booking_item_name: string;
+  user: number;
+  user_email: string;
+  user_fullname: string;
+  amount: string;
+  original_amount: string;
+  discount_amount: string;
+  reward_code?: number;
+  currency: string;
+  is_paid: boolean;
+  charge_id?: string;
+  used_points: number;
+  paid_at?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CollectRequest {
+  id: number;
+  user: number;
+  user_email: string;
+  user_fullname: string;
+  amount: string;
+  source: string;
+  status: string;
+  created_at: string;
+  updated_at: string;
+}
+
 export const apiServices = {
   // POST /auth/login  → returns { tokens: { access: string }, user: any }
   login: (email: string, password: string) =>
@@ -233,6 +296,34 @@ export const apiServices = {
   createBooking: (data: Partial<Booking>) => apiRequest<Booking>('/booking/bookings/', 'POST', data),
   updateBooking: (id: number, data: Partial<Booking>) => apiRequest<Booking>(`/booking/bookings/${id}/`, 'PUT', data),
   deleteBooking: (id: number) => apiRequest<void>(`/booking/bookings/${id}/`, 'DELETE'),
+
+  // Payments
+  fetchPayments: () => apiRequest<Payment[]>('/payment/payments/'),
+  fetchPayment: (id: number) => apiRequest<Payment>(`/payment/payments/${id}/`),
+  createPayment: (data: Partial<Payment>) => apiRequest<Payment>('/payment/payments/', 'POST', data),
+  updatePayment: (id: number, data: Partial<Payment>) => apiRequest<Payment>(`/payment/payments/${id}/`, 'PUT', data),
+  deletePayment: (id: number) => apiRequest<void>(`/payment/payments/${id}/`, 'DELETE'),
+
+  // Content Payments
+  fetchContentPayments: () => apiRequest<ContentPayment[]>('/payment/content-payments/'),
+  fetchContentPayment: (id: number) => apiRequest<ContentPayment>(`/payment/content-payments/${id}/`),
+  createContentPayment: (data: Partial<ContentPayment>) => apiRequest<ContentPayment>('/payment/content-payments/', 'POST', data),
+  updateContentPayment: (id: number, data: Partial<ContentPayment>) => apiRequest<ContentPayment>(`/payment/content-payments/${id}/`, 'PUT', data),
+  deleteContentPayment: (id: number) => apiRequest<void>(`/payment/content-payments/${id}/`, 'DELETE'),
+
+  // Booking Payments
+  fetchBookingPayments: () => apiRequest<BookingPayment[]>('/payment/booking-payments/'),
+  fetchBookingPayment: (id: number) => apiRequest<BookingPayment>(`/payment/booking-payments/${id}/`),
+  createBookingPayment: (data: Partial<BookingPayment>) => apiRequest<BookingPayment>('/payment/booking-payments/', 'POST', data),
+  updateBookingPayment: (id: number, data: Partial<BookingPayment>) => apiRequest<BookingPayment>(`/payment/booking-payments/${id}/`, 'PUT', data),
+  deleteBookingPayment: (id: number) => apiRequest<void>(`/payment/booking-payments/${id}/`, 'DELETE'),
+
+  // Collect Requests
+  fetchCollectRequests: () => apiRequest<CollectRequest[]>('/payment/collect-requests/'),
+  fetchCollectRequest: (id: number) => apiRequest<CollectRequest>(`/payment/collect-requests/${id}/`),
+  createCollectRequest: (data: Partial<CollectRequest>) => apiRequest<CollectRequest>('/payment/collect-requests/', 'POST', data),
+  updateCollectRequest: (id: number, data: Partial<CollectRequest>) => apiRequest<CollectRequest>(`/payment/collect-requests/${id}/`, 'PUT', data),
+  deleteCollectRequest: (id: number) => apiRequest<void>(`/payment/collect-requests/${id}/`, 'DELETE'),
 
   // GET /plans → returns all plans
   fetchPlans: () => apiRequest('/plans', 'GET'),

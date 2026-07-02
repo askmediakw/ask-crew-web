@@ -1,58 +1,125 @@
 'use client'
 
-import { useState } from 'react'
-import { Receipt, Check, X, RotateCcw } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { useEffect, useState, useMemo } from 'react'
+import { Receipt, Loader2 } from 'lucide-react'
+import { cn, formatGregorianDate } from '@/lib/utils'
 import { useExecMode } from '@/lib/exec-mode'
-import { ExportButtons } from '@/components/shared/export-buttons'
-import { GatewayIcons } from '@/components/shared/geo-widgets'
-import { CurrencySwitcher } from '@/components/shared/currency-switcher'
-import { useCurrency } from '@/lib/currency'
+import { useApi, apiServices, type Payment, type ContentPayment, type BookingPayment, type CollectRequest } from '@/lib/api'
 
-type Tone = 'success' | 'pending' | 'danger' | 'refunded'
-
-type Invoice = {
-  id: string
-  amountKwd: number
-  method: string
-  date: string
-  status: string
-  tone: Tone
+const paymentStatusMap: Record<string, { label: string; tone: string }> = {
+  pending: { label: 'قيد الانتظار', tone: 'bg-gold/20 text-gold' },
+  approved: { label: 'مؤكد', tone: 'bg-success/20 text-success' },
+  completed: { label: 'مكتمل', tone: 'bg-success/20 text-success' },
+  rejected: { label: 'مرفوض', tone: 'bg-destructive/20 text-destructive' },
+  cancelled: { label: 'ملغى', tone: 'bg-muted/20 text-muted-foreground' },
+  refunded: { label: 'استرجاع', tone: 'bg-accent/20 text-accent' },
 }
 
-const initialInvoices: Invoice[] = [
-  { id: 'INV-2026-01', amountKwd: 1152, method: 'K-Net', date: 'اليوم', status: 'ناجح', tone: 'success' },
-  { id: 'INV-2026-02', amountKwd: 480, method: 'Visa', date: 'أمس', status: 'ناجح', tone: 'success' },
-  { id: 'INV-2026-03', amountKwd: 2300, method: 'تحويل بنكي', date: 'قبل 3 أيام', status: 'قيد المعالجة', tone: 'pending' },
-  { id: 'INV-2026-04', amountKwd: 75, method: 'Apple Pay', date: 'قبل 5 أيام', status: 'نزاع مالي', tone: 'danger' },
-]
-
-const toneClass: Record<Tone, string> = {
-  success: 'bg-success/20 text-success',
-  pending: 'bg-gold/20 text-gold',
-  danger: 'bg-destructive/20 text-destructive',
-  refunded: 'bg-accent/20 text-accent',
-}
+type PaymentTab = 'all' | 'payments' | 'content-payments' | 'booking-payments' | 'collect-requests'
 
 export function PaymentsView() {
   const { execMode } = useExecMode()
-  const { format, currency } = useCurrency()
-  const [invoices, setInvoices] = useState(initialInvoices)
+  const { request } = useApi()
   const accent = execMode ? 'text-destructive' : 'text-primary'
+  const [activeTab, setActiveTab] = useState<PaymentTab>('all')
+  const [payments, setPayments] = useState<Payment[] | null>(null)
+  const [contentPayments, setContentPayments] = useState<ContentPayment[] | null>(null)
+  const [bookingPayments, setBookingPayments] = useState<BookingPayment[] | null>(null)
+  const [collectRequests, setCollectRequests] = useState<CollectRequest[] | null>(null)
+  const [query, setQuery] = useState('')
 
-  const update = (id: string, status: string, tone: Tone) =>
-    setInvoices((prev) => prev.map((inv) => (inv.id === id ? { ...inv, status, tone } : inv)))
+  const loadData = async () => {
+    try {
+      const [paymentsData, contentPaymentsData, bookingPaymentsData, collectRequestsData] = await Promise.all([
+        apiServices.fetchPayments(),
+        apiServices.fetchContentPayments(),
+        apiServices.fetchBookingPayments(),
+        apiServices.fetchCollectRequests(),
+      ])
+      
+      // Helper function to extract results if paginated
+      const extractData = (data: any) => {
+        if (Array.isArray(data)) return data
+        if (data && typeof data === 'object' && 'results' in data && Array.isArray(data.results)) return data.results
+        console.error('Unexpected data format:', data)
+        return []
+      }
+      
+      setPayments(extractData(paymentsData))
+      setContentPayments(extractData(contentPaymentsData))
+      setBookingPayments(extractData(bookingPaymentsData))
+      setCollectRequests(extractData(collectRequestsData))
+    } catch (e) {
+      console.error('Failed to load payments data', e)
+    }
+  }
 
-  // Total in the active display currency.
-  const total = invoices.reduce((sum, inv) => sum + inv.amountKwd, 0)
-  // Pre-formatted rows for export in the active currency.
-  const exportRows = invoices.map((inv) => ({
-    id: inv.id,
-    amount: format(inv.amountKwd),
-    method: inv.method,
-    date: inv.date,
-    status: inv.status,
-  }))
+  useEffect(() => {
+    loadData()
+  }, [])
+
+  const combinedData = useMemo(() => {
+    const data: Array<{
+      id: number
+      type: 'payment' | 'content-payment' | 'booking-payment' | 'collect-request'
+      label: string
+      amount: string
+      currency: string
+      user: string
+      date: string
+      status?: string
+      paid?: boolean
+    }> = []
+
+    payments?.forEach(p => data.push({
+      id: p.id, type: 'payment', label: `دفع: ${p.description}`,
+      amount: p.amount, currency: p.currency, user: `${p.user_fullname} (${p.user_email})`,
+      date: p.created_at
+    }))
+    contentPayments?.forEach(p => data.push({
+      id: p.id, type: 'content-payment', label: `دفع محتوى: ${p.description}`,
+      amount: p.amount, currency: p.currency, user: `${p.user_fullname} (${p.user_email})`,
+      date: p.created_at
+    }))
+    bookingPayments?.forEach(p => data.push({
+      id: p.id, type: 'booking-payment', label: `دفع حجز: ${p.booking_item_name}`,
+      amount: p.amount, currency: p.currency, user: `${p.user_fullname} (${p.user_email})`,
+      date: p.created_at, paid: p.is_paid, status: p.is_paid ? 'paid' : 'pending'
+    }))
+    collectRequests?.forEach(p => data.push({
+      id: p.id, type: 'collect-request', label: `طلب تحصيل: ${p.source}`,
+      amount: p.amount, currency: 'KWD', user: `${p.user_fullname} (${p.user_email})`,
+      date: p.created_at, status: p.status
+    }))
+
+    return data.filter(item => {
+      if (activeTab !== 'all') {
+        if (activeTab === 'payments') return item.type === 'payment'
+        if (activeTab === 'content-payments') return item.type === 'content-payment'
+        if (activeTab === 'booking-payments') return item.type === 'booking-payment'
+        if (activeTab === 'collect-requests') return item.type === 'collect-request'
+      }
+      if (!query) return true
+      const lowerQuery = query.toLowerCase()
+      return (
+        item.label.toLowerCase().includes(lowerQuery) ||
+        item.user.toLowerCase().includes(lowerQuery) ||
+        item.amount.includes(query)
+      )
+    })
+  }, [payments, contentPayments, bookingPayments, collectRequests, activeTab, query])
+
+  const totalAmount = useMemo(() => {
+    return combinedData.reduce((sum, item) => sum + parseFloat(item.amount), 0)
+  }, [combinedData])
+
+  if (payments === null && contentPayments === null && bookingPayments === null && collectRequests === null) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <Loader2 className="h-6 w-6 animate-spin text-primary" />
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-6">
@@ -66,102 +133,104 @@ export function PaymentsView() {
             جميع المعاملات المالية، النزاعات، وعمليات الاسترجاع.
           </p>
         </div>
-        <div className="flex flex-wrap items-center gap-3">
-          <CurrencySwitcher />
-          <ExportButtons
-            label="المدفوعات"
-            rows={exportRows}
-            columns={[
-              { key: 'id', header: 'رقم الفاتورة' },
-              { key: 'amount', header: 'المبلغ' },
-              { key: 'method', header: 'طريقة الدفع' },
-              { key: 'date', header: 'التاريخ' },
-              { key: 'status', header: 'الحالة' },
-            ]}
-          />
-        </div>
       </div>
 
-      {/* Live total in the selected currency (#12) */}
-      <div className="glass flex items-center justify-between rounded-2xl border border-border p-4">
-        <span className="text-sm text-muted-foreground">إجمالي المعاملات ({currency})</span>
-        <span className="text-xl font-black text-foreground">{format(total)}</span>
-      </div>
-
-      {/* Supported payment gateways routed by the user's country */}
-      <div className="glass rounded-2xl border border-border p-4">
-        <GatewayIcons
-          country="الكويت"
-          gateways={[
-            { label: 'K-NET', className: 'border-border bg-white text-black' },
-            { label: 'VISA', className: 'border-primary/50 bg-primary text-primary-foreground' },
-            { label: 'MASTER', className: 'border-destructive/50 bg-destructive/90 text-white' },
-            { label: 'APPLE', className: 'border-border bg-foreground text-background' },
-          ]}
+      {/* Search bar */}
+      <div className="relative">
+        <input
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="ابحث عن معاملة..."
+          className="w-full rounded-xl border border-border bg-white/5 py-2.5 px-4 text-sm text-foreground outline-none transition focus:border-primary"
         />
       </div>
 
+      {/* Tabs */}
+      <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
+        {[
+          { label: 'الكل', value: 'all' },
+          { label: 'المدفوعات العامة', value: 'payments' },
+          { label: 'دفع المحتوى', value: 'content-payments' },
+          { label: 'دفع الحجوزات', value: 'booking-payments' },
+          { label: 'طلبات التحصيل', value: 'collect-requests' },
+        ].map((tab) => (
+          <button
+            key={tab.value}
+            onClick={() => setActiveTab(tab.value as PaymentTab)}
+            className={cn(
+              'flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-bold transition whitespace-nowrap',
+              activeTab === tab.value
+                ? 'border-primary bg-primary/10 text-primary'
+                : 'hover:bg-white/5'
+            )}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Total */}
+      <div className="glass flex items-center justify-between rounded-2xl border border-border p-4">
+        <span className="text-sm text-muted-foreground">إجمالي المعاملات (KWD)</span>
+        <span className="text-xl font-black text-foreground">{totalAmount.toFixed(3)}</span>
+      </div>
+
+      {/* Data table */}
       <div className="glass overflow-hidden rounded-2xl border border-border">
         <div className="overflow-x-auto">
           <table className="w-full min-w-[820px] text-right text-sm">
             <thead className="border-b border-border bg-white/5 text-xs uppercase tracking-wider text-muted-foreground">
               <tr>
-                <th className="px-5 py-4 font-semibold">رقم الفاتورة</th>
+                <th className="px-5 py-4 font-semibold">النوع</th>
+                <th className="px-5 py-4 font-semibold">المستخدم</th>
+                <th className="px-5 py-4 font-semibold">الوصف</th>
                 <th className="px-5 py-4 font-semibold">المبلغ</th>
-                <th className="px-5 py-4 font-semibold">طريقة الدفع</th>
-                <th className="px-5 py-4 font-semibold">التاريخ</th>
                 <th className="px-5 py-4 font-semibold">الحالة</th>
-                <th className="px-5 py-4 text-center font-semibold">الإجراءات المالية</th>
+                <th className="px-5 py-4 font-semibold">التاريخ</th>
               </tr>
             </thead>
             <tbody>
-              {invoices.map((inv) => (
-                <tr key={inv.id} className="group border-b border-border/60 transition last:border-0 hover:bg-white/5">
-                  <td className="px-5 py-4 font-mono text-foreground">{inv.id}</td>
-                  <td className="px-5 py-4 font-bold text-foreground">{format(inv.amountKwd)}</td>
-                  <td className="px-5 py-4 text-muted-foreground">{inv.method}</td>
-                  <td className="px-5 py-4 text-muted-foreground">{inv.date}</td>
-                  <td className="px-5 py-4">
-                    <span className={cn('rounded-full px-2.5 py-1 text-xs font-bold', toneClass[inv.tone])}>
-                      {inv.status}
-                    </span>
-                  </td>
-                  <td className="px-5 py-4">
-                    <div className="flex items-center justify-center gap-2">
-                      {inv.tone === 'pending' && (
-                        <>
-                          <button
-                            onClick={() => update(inv.id, 'ناجح', 'success')}
-                            className="flex items-center gap-1 rounded-lg bg-success/15 px-3 py-1.5 text-xs font-bold text-success transition hover:bg-success/25"
-                          >
-                            <Check className="h-3.5 w-3.5" />
-                            اعتماد
-                          </button>
-                          <button
-                            onClick={() => update(inv.id, 'مرفوض', 'danger')}
-                            className="flex items-center gap-1 rounded-lg bg-destructive/15 px-3 py-1.5 text-xs font-bold text-destructive transition hover:bg-destructive/25"
-                          >
-                            <X className="h-3.5 w-3.5" />
-                            رفض
-                          </button>
-                        </>
-                      )}
-                      {(inv.tone === 'success' || inv.tone === 'danger') && (
-                        <button
-                          onClick={() => update(inv.id, 'تم الاسترجاع', 'refunded')}
-                          className="flex items-center gap-1 rounded-lg bg-accent/15 px-3 py-1.5 text-xs font-bold text-accent transition hover:bg-accent/25"
-                        >
-                          <RotateCcw className="h-3.5 w-3.5" />
-                          استرجاع المبلغ
-                        </button>
-                      )}
-                      {inv.tone === 'refunded' && (
-                        <span className="text-xs text-muted-foreground">اكتملت المعالجة</span>
-                      )}
-                    </div>
+              {combinedData.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="px-5 py-8 text-center text-muted-foreground">
+                    لا توجد بيانات للعرض
                   </td>
                 </tr>
-              ))}
+              ) : (
+                combinedData.map((item) => (
+                  <tr key={`${item.type}-${item.id}`} className="border-b border-border/60 transition last:border-0 hover:bg-white/5">
+                    <td className="px-5 py-4 text-muted-foreground">
+                      {item.type === 'payment' && 'دفع'}
+                      {item.type === 'content-payment' && 'دفع محتوى'}
+                      {item.type === 'booking-payment' && 'دفع حجز'}
+                      {item.type === 'collect-request' && 'طلب تحصيل'}
+                    </td>
+                    <td className="px-5 py-4 text-foreground">{item.user}</td>
+                    <td className="px-5 py-4 text-muted-foreground">{item.label}</td>
+                    <td className="px-5 py-4 font-bold text-foreground">{item.amount} {item.currency}</td>
+                    <td className="px-5 py-4">
+                      {item.type === 'booking-payment' && (
+                        <span className={cn('rounded-full px-2.5 py-1 text-xs font-bold', item.paid ? 'bg-success/20 text-success' : 'bg-gold/20 text-gold')}>
+                          {item.paid ? 'مدفوع' : 'قيد الدفع'}
+                        </span>
+                      )}
+                      {item.type === 'collect-request' && item.status && (
+                        <span className={cn('rounded-full px-2.5 py-1 text-xs font-bold', paymentStatusMap[item.status]?.tone || 'bg-muted/20 text-muted-foreground')}>
+                          {paymentStatusMap[item.status]?.label || item.status}
+                        </span>
+                      )}
+                      {!['booking-payment', 'collect-request'].includes(item.type) && (
+                        <span className="rounded-full bg-success/20 px-2.5 py-1 text-xs font-bold text-success">
+                          مكتمل
+                        </span>
+                      )}
+                    </td>
+                    <td className="px-5 py-4 text-muted-foreground">
+                      {formatGregorianDate(item.date)}
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>

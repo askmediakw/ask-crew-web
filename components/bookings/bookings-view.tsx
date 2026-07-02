@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useMemo } from 'react'
 import { CalendarCheck, Loader2, Search, Plus } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { cn, formatGregorianDate } from '@/lib/utils'
 import { useExecMode } from '@/lib/exec-mode'
 import { useApi, apiServices, type Booking, type BookingItem } from '@/lib/api'
 import { useModal } from '@/lib/modal'
@@ -333,7 +333,7 @@ export function BookingsView() {
                       {booking.user_fullname} • {booking.user_email}
                     </p>
                     <p className="text-sm text-muted-foreground">
-                      {new Date(booking.start_date).toLocaleDateString('ar-SA')} - {new Date(booking.end_date).toLocaleDateString('ar-SA')} • الكمية: {booking.quantity}
+                      {formatGregorianDate(booking.start_date)} - {formatGregorianDate(booking.end_date)} • الكمية: {booking.quantity}
                     </p>
                     {booking.payment_amount && (
                       <p className="text-sm text-muted-foreground">المبلغ: {booking.payment_amount} د.ك</p>
