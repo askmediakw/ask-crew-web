@@ -499,6 +499,61 @@ export const apiServices = {
   fetchFavorites: () => apiRequest('/content/favorites/', 'GET'),
   addFavorite: (data: unknown) => apiRequest('/content/favorites/add/', 'POST', data),
   removeFavorite: (data: unknown) => apiRequest('/content/favorites/remove/', 'POST', data),
+
+  // Rewards
+  fetchRewards: () => apiRequest<RewardType[]>('/reward/rewards/'),
+  fetchReward: (id: number) => apiRequest<RewardType>(`/reward/rewards/${id}/`),
+  createReward: (data: Partial<RewardType>) => apiRequest<RewardType>('/reward/rewards/', 'POST', data),
+  updateReward: (id: number, data: Partial<RewardType>) => apiRequest<RewardType>(`/reward/rewards/${id}/`, 'PUT', data),
+  deleteReward: (id: number) => apiRequest<void>(`/reward/rewards/${id}/`, 'DELETE'),
+
+  // Reward Codes
+  fetchRewardCodes: () => apiRequest<RewardCodeType[]>('/reward/codes/'),
+  fetchRewardCode: (id: number) => apiRequest<RewardCodeType>(`/reward/codes/${id}/`),
+  createRewardCode: (data: { reward: number; code: string; is_active: boolean }) => 
+    apiRequest<RewardCodeType>('/reward/codes/', 'POST', { reward_id: data.reward, code: data.code, is_active: data.is_active }),
+  updateRewardCode: (id: number, data: Partial<RewardCodeType>) => apiRequest<RewardCodeType>(`/reward/codes/${id}/`, 'PUT', data),
+  deleteRewardCode: (id: number) => apiRequest<void>(`/reward/codes/${id}/`, 'DELETE'),
+
+  // Points History
+  fetchPointsHistory: () => apiRequest<PointsHistoryType[]>('/reward/points-history/'),
+  fetchPointsHistoryItem: (id: number) => apiRequest<PointsHistoryType>(`/reward/points-history/${id}/`),
+  createPointsHistory: (data: Partial<PointsHistoryType>) => apiRequest<PointsHistoryType>('/reward/points-history/', 'POST', data),
+  updatePointsHistory: (id: number, data: Partial<PointsHistoryType>) => apiRequest<PointsHistoryType>(`/reward/points-history/${id}/`, 'PUT', data),
+  deletePointsHistory: (id: number) => apiRequest<void>(`/reward/points-history/${id}/`, 'DELETE'),
+}
+
+// Reward Types
+export interface RewardType {
+  id: number;
+  name: string;
+  description: string;
+  points: number;
+  image: string;
+  is_active: boolean;
+  rate: number;
+  content: 'movie' | 'advertise' | 'season' | 'all_content' | 'booking';
+  created_at: string;
+  updated_at: string;
+}
+
+export interface RewardCodeType {
+  id: number;
+  code: string;
+  user?: number | null;
+  reward: RewardType;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface PointsHistoryType {
+  id: number;
+  title: string;
+  user: number;
+  points: number;
+  created_at: string;
+  updated_at: string;
 }
 
 // Default export for easier import
