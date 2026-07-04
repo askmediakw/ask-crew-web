@@ -390,7 +390,7 @@ export function PlansEditor() {
                   'w-full text-right px-3 py-2 rounded-lg transition text-sm',
                   plan.id === currentPlanId
                     ? 'bg-primary/20 text-primary font-bold'
-                    : 'hover:bg-white/10 text-muted-foreground',
+                    : 'hover:bg-secondary/50 text-muted-foreground',
                 )}
               >
                 <div className="flex items-center gap-2">
@@ -431,7 +431,7 @@ export function PlansEditor() {
 
               <button
                 onClick={handleOpenCloneModal}
-                className="flex items-center gap-2 rounded-xl border border-border bg-white/5 px-4 py-2 text-sm font-semibold text-foreground transition hover:bg-white/10"
+                className="flex items-center gap-2 rounded-xl border border-border bg-secondary/50 px-4 py-2 text-sm font-semibold text-foreground transition hover:bg-secondary"
               >
                 <Copy className="h-4 w-4" />
                 نسخة
@@ -524,10 +524,10 @@ export function PlansEditor() {
             </div>
 
             {/* Billing cycle + marketing badge */}
-            <div className="mt-5 grid grid-cols-1 gap-5 rounded-2xl border border-border bg-white/5 p-4 sm:grid-cols-2">
+            <div className="mt-5 grid grid-cols-1 gap-5 rounded-2xl border border-border bg-secondary/30 p-4 sm:grid-cols-2">
               <div>
                 <label className="mb-2 block text-sm font-medium text-muted-foreground">{t('plans.billingCycle')}</label>
-                <div className="grid grid-cols-2 gap-1 rounded-xl border border-border bg-[#2a2b36] p-1">
+                <div className="grid grid-cols-2 gap-1 rounded-xl border border-border bg-secondary p-1">
                   {(Object.keys(CYCLE_META) as BillingCycle[]).map((cycle) => {
                     const meta = CYCLE_META[cycle]
                     const isActive = billingCycle === cycle
@@ -541,8 +541,8 @@ export function PlansEditor() {
                         className={cn(
                           'flex items-center justify-center gap-1.5 rounded-lg py-2 text-xs font-bold transition-all',
                           isActive
-                            ? 'bg-white/10 ring-1 ring-inset ring-white/20'
-                            : 'hover:bg-white/5',
+                            ? 'bg-primary/20 ring-1 ring-inset ring-primary/30'
+                            : 'hover:bg-secondary/50',
                         )}
                       >
                         <span>{t(`plans.${cycle}`, meta.short)}</span>
@@ -655,7 +655,7 @@ export function PlansEditor() {
               {lastSavedFeatures && (
                 <button
                   onClick={handleUndo}
-                  className="flex items-center gap-1.5 rounded-lg border border-border bg-white/5 px-3 py-1.5 text-xs font-bold text-muted-foreground transition-colors hover:text-foreground"
+                  className="flex items-center gap-1.5 rounded-lg border border-border bg-secondary/50 px-3 py-1.5 text-xs font-bold text-muted-foreground transition-colors hover:text-foreground"
                 >
                   <Undo2 className="h-4 w-4" />
                   تراجع عن الحذف
@@ -698,7 +698,7 @@ export function PlansEditor() {
                   onDragOver={(e) => e.preventDefault()}
                   onDrop={() => handleDrop(feature.id)}
                   className={cn(
-                    'group flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-white/5 p-4 transition-all',
+                    'group flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-secondary/30 p-4 transition-all',
                     dragId === feature.id ? 'opacity-50' : 'hover:border-primary/40',
                   )}
                 >
@@ -744,7 +744,7 @@ export function PlansEditor() {
                             disabled={feature.unlimited}
                             value={feature.unlimited ? '' : feature.limit}
                             onChange={(e) => updateLimit(feature.id, Number(e.target.value))}
-                            className="w-20 rounded-lg border border-border bg-white/5 px-2 py-1.5 text-center text-sm text-foreground outline-none focus:border-primary disabled:opacity-40"
+                            className="w-20 rounded-lg border border-border bg-secondary/50 px-2 py-1.5 text-center text-sm text-foreground outline-none focus:border-primary disabled:opacity-40"
                             placeholder="∞"
                           />
                         </div>
@@ -755,7 +755,7 @@ export function PlansEditor() {
                             'flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-xs font-semibold transition-colors',
                             feature.unlimited
                               ? 'border-primary/40 bg-primary/15 text-primary'
-                              : 'border-border bg-white/5 text-muted-foreground hover:text-foreground',
+                              : 'border-border bg-secondary/50 text-muted-foreground hover:text-foreground',
                           )}
                         >
                           <InfinityIcon className="h-3.5 w-3.5" />
@@ -829,7 +829,7 @@ export function PlansEditor() {
             <div className="mt-6 flex gap-3">
               <button
                 onClick={() => setIsCloneModalOpen(false)}
-                className="flex-1 rounded-xl border border-border bg-white/5 py-3 text-sm font-bold text-foreground transition hover:bg-white/10"
+                className="flex-1 rounded-xl border border-border bg-secondary/50 py-3 text-sm font-bold text-foreground transition hover:bg-secondary"
               >
                 إلغاء
               </button>

@@ -33,7 +33,7 @@ function NavList({ collapsed }: { collapsed: boolean }) {
                 ? execMode
                   ? 'bg-destructive/15 text-foreground'
                   : 'bg-primary/15 text-primary-foreground'
-                : 'text-muted-foreground hover:bg-white/5 hover:text-foreground',
+                : 'text-muted-foreground hover:bg-secondary/50 hover:text-foreground',
             )}
           >
             {active && (
@@ -119,7 +119,7 @@ function Profile({ collapsed }: { collapsed: boolean }) {
     <div className="border-t border-sidebar-border p-4">
       <div
         className={cn(
-          'flex items-center gap-3 rounded-xl bg-white/5 p-3 transition-all',
+          'flex items-center gap-3 rounded-xl bg-secondary/50 p-3 transition-all',
           !collapsed && execMode && 'glow-alert',
           collapsed && 'justify-center',
         )}
@@ -188,7 +188,7 @@ export function Sidebar({
               <Brand collapsed={false} />
               <button
                 onClick={onCloseMobile}
-                className="absolute end-4 top-5 rounded-lg p-1.5 text-muted-foreground hover:bg-white/10 hover:text-foreground"
+                className="absolute end-4 top-5 rounded-lg p-1.5 text-muted-foreground hover:bg-secondary/50 hover:text-foreground"
                 aria-label={t('sidebar.closeMenu')}
               >
                 <X className="h-5 w-5" />

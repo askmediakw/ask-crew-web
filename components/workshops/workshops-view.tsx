@@ -55,7 +55,7 @@ type Job = {
 
 const toneClass: Record<string, string> = {
   success: 'bg-success/20 text-success',
-  muted: 'bg-white/10 text-muted-foreground',
+  muted: 'bg-secondary/50 text-muted-foreground',
 }
 
 const workshopFields = (w?: Workshop): CrudField[] => [
@@ -256,7 +256,7 @@ export function WorkshopsView() {
         <div className="flex gap-3">
           <button
             onClick={fetchAllData}
-            className="flex items-center gap-2 rounded-xl bg-secondary px-4 py-2.5 text-sm font-bold text-foreground transition hover:bg-white/15"
+            className="flex items-center gap-2 rounded-xl bg-secondary px-4 py-2.5 text-sm font-bold text-foreground transition hover:bg-secondary/80"
           >
             <RotateCcw className="h-4 w-4" />
             تحديث
@@ -301,7 +301,7 @@ export function WorkshopsView() {
       <div className="glass overflow-hidden rounded-2xl border border-border">
         <div className="overflow-x-auto">
           <table className="w-full min-w-[640px] text-right text-sm">
-            <thead className="border-b border-border bg-white/5 text-xs uppercase tracking-wider text-muted-foreground">
+            <thead className="border-b border-border bg-secondary/30 text-xs uppercase tracking-wider text-muted-foreground">
               {tab === 'workshops' ? (
                 <tr>
                   <th className="px-5 py-4 font-semibold">صورة الغلاف</th>
@@ -338,7 +338,7 @@ export function WorkshopsView() {
                 </tr>
               ) : tab === 'workshops' ? (
                 workshops.map((w) => (
-                  <tr key={w.id} className="border-b border-border/60 transition last:border-0 hover:bg-white/5">
+                  <tr key={w.id} className="border-b border-border/60 transition last:border-0 hover:bg-secondary/30">
                     <td className="px-5 py-4">
                       {w.cover_image ? (
                         <img 
@@ -347,7 +347,7 @@ export function WorkshopsView() {
                           className="h-12 w-16 object-cover rounded-lg"
                         />
                       ) : (
-                        <div className="h-12 w-16 rounded-lg bg-white/10 flex items-center justify-center text-muted-foreground text-xs">
+                        <div className="h-12 w-16 rounded-lg bg-secondary/50 flex items-center justify-center text-muted-foreground text-xs">
                           لا توجد صورة
                         </div>
                       )}
@@ -391,7 +391,7 @@ export function WorkshopsView() {
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => viewRegistrations(w.id, w.name)}
-                          className="flex h-8 w-8 items-center justify-center rounded-lg border border-border text-muted-foreground transition hover:bg-white/10 hover:text-foreground"
+                          className="flex h-8 w-8 items-center justify-center rounded-lg border border-border text-muted-foreground transition hover:bg-secondary/50 hover:text-foreground"
                           aria-label="المسجلين"
                         >
                           <Users className="h-4 w-4" />
@@ -411,7 +411,7 @@ export function WorkshopsView() {
                 ))
               ) : (
                 jobs.map((j) => (
-                  <tr key={j.id} className="border-b border-border/60 transition last:border-0 hover:bg-white/5">
+                  <tr key={j.id} className="border-b border-border/60 transition last:border-0 hover:bg-secondary/30">
                     <td className="px-5 py-4">
                       {j.image ? (
                         <img
@@ -420,7 +420,7 @@ export function WorkshopsView() {
                           className="h-12 w-16 object-cover rounded-lg"
                         />
                       ) : (
-                        <div className="h-12 w-16 rounded-lg bg-white/10 flex items-center justify-center text-muted-foreground text-xs">
+                        <div className="h-12 w-16 rounded-lg bg-secondary/50 flex items-center justify-center text-muted-foreground text-xs">
                           لا توجد صورة
                         </div>
                       )}
@@ -442,7 +442,7 @@ export function WorkshopsView() {
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => viewJobApplications(j.id, j.job_title)}
-                          className="flex h-8 w-8 items-center justify-center rounded-lg border border-border text-muted-foreground transition hover:bg-white/10 hover:text-foreground"
+                          className="flex h-8 w-8 items-center justify-center rounded-lg border border-border text-muted-foreground transition hover:bg-secondary/50 hover:text-foreground"
                           aria-label="المتقدمين"
                         >
                           <Users className="h-4 w-4" />

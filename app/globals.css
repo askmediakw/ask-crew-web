@@ -53,8 +53,6 @@
 }
 
 :root {
-  color-scheme: dark;
-
   /* Midnight indigo base */
   --background: oklch(0.16 0.035 285);
   --foreground: oklch(0.93 0.01 280);
@@ -107,24 +105,24 @@
 /* Global light theme (#9) — toggled by ThemeProvider via `.light` on <html>. */
 .light {
   color-scheme: light;
-  --background: oklch(0.97 0.005 285);
-  --foreground: oklch(0.22 0.03 285);
-  --card: oklch(0.99 0.003 285);
-  --card-foreground: oklch(0.22 0.03 285);
-  --popover: oklch(0.99 0.003 285);
-  --popover-foreground: oklch(0.22 0.03 285);
-  --secondary: oklch(0.93 0.01 285);
-  --secondary-foreground: oklch(0.25 0.03 285);
-  --muted: oklch(0.94 0.008 285);
-  --muted-foreground: oklch(0.45 0.03 285);
-  --border: oklch(0.2 0.03 285 / 12%);
-  --input: oklch(0.2 0.03 285 / 16%);
-  --sidebar: oklch(0.99 0.003 285);
-  --sidebar-foreground: oklch(0.25 0.03 285);
-  --sidebar-border: oklch(0.2 0.03 285 / 10%);
+  --background: oklch(0.92 0.008 285);
+  --foreground: oklch(0.18 0.03 285);
+  --card: oklch(0.95 0.005 285);
+  --card-foreground: oklch(0.18 0.03 285);
+  --popover: oklch(0.95 0.005 285);
+  --popover-foreground: oklch(0.18 0.03 285);
+  --secondary: oklch(0.88 0.012 285);
+  --secondary-foreground: oklch(0.2 0.03 285);
+  --muted: oklch(0.9 0.01 285);
+  --muted-foreground: oklch(0.4 0.03 285);
+  --border: oklch(0.2 0.03 285 / 15%);
+  --input: oklch(0.2 0.03 285 / 20%);
+  --sidebar: oklch(0.95 0.005 285);
+  --sidebar-foreground: oklch(0.2 0.03 285);
+  --sidebar-border: oklch(0.2 0.03 285 / 12%);
 }
 .light .glass {
-  background: oklch(0.2 0.03 285 / 4%);
+  background: oklch(0.2 0.03 285 / 8%);
 }
 
 @layer base {
@@ -141,7 +139,7 @@
 
 @layer utilities {
   .glass {
-    background: oklch(0.98 0 0 / 5%);
+    background: color-mix(in srgb, var(--popover), transparent 95%);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
   }

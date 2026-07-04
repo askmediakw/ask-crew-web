@@ -41,7 +41,7 @@ export function VodView() {
             VOD — مكتبة الأعمال
           </h1>
         </div>
-        <div className="flex rounded-lg bg-white/5 p-1">
+        <div className="flex rounded-lg bg-secondary/30 p-1">
           <button
             type="button"
             onClick={() => setTab('catalog')}

@@ -49,56 +49,56 @@ export function MobilePreview({
   return (
     <div className="mx-auto w-[300px] shrink-0">
       <div
-        className={`relative h-[600px] w-[300px] overflow-hidden rounded-[2.75rem] border-[10px] border-black bg-black shadow-2xl ${execMode ? 'glow-alert' : 'glow-brand'}`}
+        className={`relative h-[600px] w-[300px] overflow-hidden rounded-[2.75rem] border-[10px] border-foreground bg-background shadow-2xl ${execMode ? 'glow-alert' : 'glow-brand'}`}
       >
         {/* notch */}
-        <div className="absolute left-1/2 top-0 z-20 h-6 w-32 -translate-x-1/2 rounded-b-2xl bg-black" />
+        <div className="absolute left-1/2 top-0 z-20 h-6 w-32 -translate-x-1/2 rounded-b-2xl bg-foreground" />
 
-        <div className="flex h-full flex-col overflow-y-auto bg-[#0f0a1e] scrollbar-thin" dir="rtl">
+        <div className="flex h-full flex-col overflow-y-auto bg-card scrollbar-thin" dir="rtl">
           {/* app header */}
-          <div className="flex items-center gap-2 border-b border-white/10 px-4 py-4 pt-7">
+          <div className="flex items-center gap-2 border-b border-border px-4 py-4 pt-7">
             <div className="relative h-7 w-7 overflow-hidden rounded-lg">
               <Image src="/logo.png" alt="ASK CREW" fill className="object-cover" sizes="28px" />
             </div>
-            <span className="text-sm font-black tracking-widest text-white">ASK CREW</span>
-            <span className="mr-auto rounded-full bg-white/10 px-2 py-0.5 text-[10px] font-bold text-white/70">
+            <span className="text-sm font-black tracking-widest text-foreground">ASK CREW</span>
+            <span className="mr-auto rounded-full bg-secondary px-2 py-0.5 text-[10px] font-bold text-muted-foreground">
               {variant === 'VIP' ? 'VIP' : `نسخة ${variant}`}
             </span>
           </div>
 
           <div className="flex-1 p-4">
-            <p className="text-center text-[11px] font-medium text-white/40">معاينة التطبيق</p>
+            <p className="text-center text-[11px] font-medium text-muted-foreground">معاينة التطبيق</p>
 
-            <div className="relative mt-5 rounded-2xl border border-white/10 bg-white/5 p-5">
+            <div className="relative mt-5 rounded-2xl border border-border bg-secondary/30 p-5">
               {badge && (
                 <span
                   className={`absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full px-3 py-1 text-[10px] font-black tracking-wide shadow-lg ${
-                    execMode ? 'bg-destructive text-white' : 'bg-gold text-black'
+                    execMode ? 'bg-destructive text-white' : 'bg-gold text-background'
                   }`}
                 >
                   {badge}
                 </span>
               )}
               <p className={`text-xs font-bold ${accentClass}`}>{planType || 'نوع الباقة'}</p>
-              <h3 className="mt-1 text-xl font-black text-white">{planName || 'اسم الباقة'}</h3>
+              <h3 className="mt-1 text-xl font-black text-foreground">{planName || 'اسم الباقة'}</h3>
 
               <div className="mt-4 flex items-end gap-1">
-                <span className="text-3xl font-black text-white">{displayPrice || '0'}</span>
-                <span className="mb-1 text-xs text-white/50">{cycleLabel}</span>
+                <span className="text-3xl font-black text-foreground">{displayPrice || '0'}</span>
+                <span className="mb-1 text-xs text-muted-foreground">{cycleLabel}</span>
               </div>
               {/* #12 Dynamic currency conversion (KWD → SAR ≈ 12.25) */}
-              <p className="mt-1 text-[11px] text-white/40">
+              <p className="mt-1 text-[11px] text-muted-foreground">
                 ≈ {Math.round(displayPrice * 12.25).toLocaleString('en-US')} ريال سعودي (عملتك المحلية)
               </p>
 
               <ul className="mt-5 space-y-3">
                 {selected.length === 0 && (
-                  <li className="rounded-lg border border-dashed border-white/10 py-4 text-center text-xs italic text-white/40">
+                  <li className="rounded-lg border border-dashed border-border py-4 text-center text-xs italic text-muted-foreground">
                     لم يتم اختيار مميزات بعد
                   </li>
                 )}
                 {selected.map((f) => (
-                  <li key={f.id} className="flex items-center gap-2.5 text-sm text-white/85">
+                  <li key={f.id} className="flex items-center gap-2.5 text-sm text-foreground">
                     <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-success/20">
                       <Check className="h-3 w-3 text-success" />
                     </span>
@@ -107,7 +107,7 @@ export function MobilePreview({
                       className={`flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[10px] font-bold ${
                         f.unlimited
                           ? 'bg-gold/15 text-gold'
-                          : 'bg-white/10 text-white/70'
+                          : 'bg-secondary text-muted-foreground'
                       }`}
                     >
                       {f.unlimited ? (
@@ -130,7 +130,7 @@ export function MobilePreview({
               </button>
             </div>
 
-            <p className="mt-4 text-center text-[10px] text-white/30">
+            <p className="mt-4 text-center text-[10px] text-muted-foreground">
               يمكنك الإلغاء في أي وقت — بدون التزامات
             </p>
           </div>
