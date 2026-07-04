@@ -530,6 +530,13 @@ export const apiServices = {
   updateWallet: (id: number, data: Partial<WalletType>) => apiRequest<WalletType>(`/payment/wallets/${id}/`, 'PUT', data),
   deleteWallet: (id: number) => apiRequest<void>(`/payment/wallets/${id}/`, 'DELETE'),
   fetchAdminWalletSummary: () => apiRequest<WalletData>('/payment/wallet/admin-summary'),
+
+  // Notifications (Admin)
+  fetchNotifications: () => apiRequest<AdminNotificationType[]>('/notifications/admin/'),
+  fetchNotification: (id: number) => apiRequest<AdminNotificationType>(`/notifications/admin/${id}/`),
+  createNotification: (data: Partial<AdminNotificationType>) => apiRequest<AdminNotificationType>('/notifications/admin/', 'POST', data),
+  updateNotification: (id: number, data: Partial<AdminNotificationType>) => apiRequest<AdminNotificationType>(`/notifications/admin/${id}/`, 'PUT', data),
+  deleteNotification: (id: number) => apiRequest<void>(`/notifications/admin/${id}/`, 'DELETE'),
 }
 
 // Reward Types
@@ -573,6 +580,20 @@ export interface WalletType {
   user_type: string;
   wallet: string;
   points: number;
+}
+
+// Notification Type
+export interface AdminNotificationType {
+  id: number;
+  user: number;
+  user_email: string;
+  user_fullname: string;
+  notification_type: 'message' | 'payment' | 'profile_verification' | 'system' | 'custom';
+  title: string;
+  message: string;
+  is_read: boolean;
+  metadata: Record<string, unknown>;
+  created_at: string;
 }
 
 // Default export for easier import

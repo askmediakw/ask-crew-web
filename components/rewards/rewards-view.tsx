@@ -111,7 +111,7 @@ function RewardForm({ reward, onSuccess, isEdit = false }: { reward?: RewardType
         </div>
         <div>
           <FieldLabel>نوع المحتوى</FieldLabel>
-          <select value={contentType} onChange={(e) => setContentType(e.target.value)} className="input-base">
+          <select value={contentType} onChange={(e) => setContentType(e.target.value as any)} className="input-base">
             <option value="movie">فيلم</option>
             <option value="advertise">إعلان</option>
             <option value="season">مسلسل</option>
