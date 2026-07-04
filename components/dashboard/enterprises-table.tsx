@@ -1,24 +1,32 @@
 import { cn } from '@/lib/utils'
+import { Loader2 } from 'lucide-react'
 
 type Row = {
   name: string
   email: string
   plan: string
-  price: string
+  price: number
   status: string
   active: boolean
   color: string
 }
 
-const rows: Row[] = [
-  { name: 'رويال للإنتاج', email: 'info@royal.com', plan: 'VIP', price: '1,152 د.ك', status: 'مفعّل', active: true, color: 'var(--primary)' },
-  { name: 'سينما آرت', email: 'contact@cinema.com', plan: 'Enterprise', price: '336 د.ك', status: 'مفعّل', active: true, color: 'var(--accent)' },
-  { name: 'فوكس ميديا', email: 'hello@focus.net', plan: 'Pro', price: '48 د.ك', status: 'قيد المراجعة', active: false, color: 'var(--gold)' },
-  { name: 'بلاك بوكس استوديو', email: 'team@blackbox.io', plan: 'VIP', price: '960 د.ك', status: 'مفعّل', active: true, color: 'var(--success)' },
-  { name: 'نجوم الخليج', email: 'pr@gulfstars.com', plan: 'Pro', price: '72 د.ك', status: 'قيد المراجعة', active: false, color: 'var(--chart-5)' },
-]
+interface EnterprisesTableProps {
+  loading?: boolean
+  rows?: Row[]
+}
 
-export function EnterprisesTable() {
+export function EnterprisesTable({ loading, rows = [] }: EnterprisesTableProps) {
+  if (loading) {
+    return (
+      <section className="overflow-hidden rounded-2xl border border-border glass p-5 md:p-6">
+        <div className="flex items-center justify-center py-12">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      </section>
+    )
+  }
+
   return (
     <section className="overflow-hidden rounded-2xl border border-border glass p-5 md:p-6">
       <div className="mb-5 flex items-center justify-between">
@@ -65,7 +73,7 @@ export function EnterprisesTable() {
                   </div>
                 </td>
                 <td className="px-4 py-3 font-medium text-foreground">{row.plan}</td>
-                <td className="px-4 py-3 font-mono text-sm text-muted-foreground">{row.price}</td>
+                <td className="px-4 py-3 font-mono text-sm text-muted-foreground">{row.price.toLocaleString('ar-EG')} د.ك</td>
                 <td className="px-4 py-3">
                   <span
                     className={cn(

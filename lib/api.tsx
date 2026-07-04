@@ -537,6 +537,15 @@ export const apiServices = {
   createNotification: (data: Partial<AdminNotificationType>) => apiRequest<AdminNotificationType>('/notifications/admin/', 'POST', data),
   updateNotification: (id: number, data: Partial<AdminNotificationType>) => apiRequest<AdminNotificationType>(`/notifications/admin/${id}/`, 'PUT', data),
   deleteNotification: (id: number) => apiRequest<void>(`/notifications/admin/${id}/`, 'DELETE'),
+
+  // Site Settings & Constance
+  fetchSiteSettings: () => apiRequest<SiteSettingsType>('/sites/current/'),
+  updateSiteSettings: (data: Partial<SiteSettingsType>) => apiRequest<SiteSettingsType>('/sites/current/', 'PUT', data),
+  fetchConstanceConfig: () => apiRequest<ConstanceConfigType>('/constance/config/'),
+  updateConstanceConfig: (data: Partial<ConstanceConfigType>) => apiRequest<ConstanceConfigType>('/constance/config/', 'PUT', data),
+
+  // Dashboard Stats
+  fetchDashboardStats: () => apiRequest<DashboardStatsType>('/dashboard/stats/'),
 }
 
 // Reward Types
@@ -594,6 +603,82 @@ export interface AdminNotificationType {
   is_read: boolean;
   metadata: Record<string, unknown>;
   created_at: string;
+}
+
+// Site Settings Types
+export interface SiteSettingsType {
+  id: number;
+  domain: string;
+  name: string;
+}
+
+// Constance Config Types
+export interface ConstanceConfigType {
+  WATERMARK_PRICE: number;
+  THREE_MONTHS_DISCOUNT: number;
+  YEARLY_DISCOUNT: number;
+  BOOKING_COMMISION_RATE: number;
+  CONTENT_COMMISION_RATE: number;
+}
+
+// Activity Feed Types
+type ActivityTone = 'success' | 'info' | 'gold' | 'danger';
+
+// Leaderboard Types
+export interface LeaderboardEntry {
+  rank: number;
+  name: string;
+  subtitle: string;
+  verified: boolean;
+  score: number;
+  metricLabel: string;
+  trend: number;
+}
+
+export type LeaderboardCategory = 'freelancers' | 'assets' | 'projects';
+
+// Dashboard Stats Types
+export interface DashboardStatsType {
+  stats: {
+    total_revenue: number;
+    total_revenue_trend: string;
+    total_enterprises: number;
+    total_enterprises_trend: string;
+    total_students: number;
+    total_students_trend: string;
+    completed_bookings: number;
+    completed_bookings_trend: string;
+    completed_bookings_down: boolean;
+  };
+  sparklines: {
+    revenue: number[];
+    enterprises: number[];
+    students: number[];
+    bookings: number[];
+  };
+  revenue_chart: {
+    labels: string[];
+    data: number[];
+  };
+  recent_enterprises: Array<{
+    name: string;
+    email: string;
+    plan: string;
+    price: number;
+    status: string;
+    active: boolean;
+    color: string;
+  }>;
+  activity: Array<{
+    type: string;
+    desc: string;
+    status: string;
+    tone: ActivityTone;
+    time: string;
+  }>;
+  leaderboard: {
+    [key in LeaderboardCategory]: LeaderboardEntry[];
+  };
 }
 
 // Default export for easier import

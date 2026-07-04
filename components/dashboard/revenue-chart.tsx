@@ -1,48 +1,19 @@
 'use client'
 
 import { useMemo, useState } from 'react'
+import { type DashboardStatsType } from '@/lib/api'
 
 type Datum = { label: string; value: number }
 
-// Three distinct mock datasets — one per timeframe. Values are in (thousand KWD).
-const DATASETS: Record<'monthly' | 'quarterly' | 'annual', Datum[]> = {
-  monthly: [
-    { label: 'يناير', value: 18 },
-    { label: 'فبراير', value: 26 },
-    { label: 'مارس', value: 22 },
-    { label: 'أبريل', value: 34 },
-    { label: 'مايو', value: 40 },
-    { label: 'يونيو', value: 31 },
-    { label: 'يوليو', value: 48 },
-    { label: 'أغسطس', value: 44 },
-    { label: 'سبتمبر', value: 57 },
-    { label: 'أكتوبر', value: 52 },
-    { label: 'نوفمبر', value: 64 },
-    { label: 'ديسمبر', value: 69 },
-  ],
-  quarterly: [
-    { label: 'الربع الأول', value: 66 },
-    { label: 'الربع الثاني', value: 105 },
-    { label: 'الربع الثالث', value: 149 },
-    { label: 'الربع الرابع', value: 185 },
-  ],
-  annual: [
-    { label: '2021', value: 142 },
-    { label: '2022', value: 218 },
-    { label: '2023', value: 305 },
-    { label: '2024', value: 396 },
-    { label: '2025', value: 505 },
-    { label: '2026', value: 612 },
-  ],
-}
-
-const RANGES: { id: keyof typeof DATASETS; label: string }[] = [
+const RANGES: { id: 'weekly' | 'monthly' | 'quarterly' | 'annual'; label: string }[] = [
+  { id: 'weekly', label: 'أسبوعي' },
   { id: 'monthly', label: 'شهري' },
   { id: 'quarterly', label: 'ربعي' },
   { id: 'annual', label: 'سنوي' },
 ]
 
-const RANGE_SUBTITLE: Record<keyof typeof DATASETS, string> = {
+const RANGE_SUBTITLE: Record<'weekly' | 'monthly' | 'quarterly' | 'annual', string> = {
+  weekly: 'نمو المبيعات خلال آخر 7 أيام (د.ك)',
   monthly: 'نمو المبيعات خلال آخر 12 شهراً (بالألف د.ك)',
   quarterly: 'نمو المبيعات خلال أرباع السنة (بالألف د.ك)',
   annual: 'نمو المبيعات خلال آخر 6 سنوات (بالألف د.ك)',
@@ -52,14 +23,68 @@ const W = 1000
 const H = 320
 const PAD_Y = 24
 
-export function RevenueChart() {
-  const [range, setRange] = useState<keyof typeof DATASETS>('monthly')
+interface RevenueChartProps {
+  data?: DashboardStatsType | null
+}
+
+export function RevenueChart({ data: dashboardData }: RevenueChartProps) {
+  const [range, setRange] = useState<'weekly' | 'monthly' | 'quarterly' | 'annual'>('weekly')
   const [hover, setHover] = useState<number | null>(null)
 
-  const data = DATASETS[range]
+  // Fallback mock data for other time ranges
+  const getMockData = (rangeType: string): Datum[] => {
+    switch (rangeType) {
+      case 'monthly':
+        return [
+          { label: 'يناير', value: 18 },
+          { label: 'فبراير', value: 26 },
+          { label: 'مارس', value: 22 },
+          { label: 'أبريل', value: 34 },
+          { label: 'مايو', value: 40 },
+          { label: 'يونيو', value: 31 },
+          { label: 'يوليو', value: 48 },
+          { label: 'أغسطس', value: 44 },
+          { label: 'سبتمبر', value: 57 },
+          { label: 'أكتوبر', value: 52 },
+          { label: 'نوفمبر', value: 64 },
+          { label: 'ديسمبر', value: 69 },
+        ]
+      case 'quarterly':
+        return [
+          { label: 'الربع الأول', value: 66 },
+          { label: 'الربع الثاني', value: 105 },
+          { label: 'الربع الثالث', value: 149 },
+          { label: 'الربع الرابع', value: 185 },
+        ]
+      case 'annual':
+        return [
+          { label: '2021', value: 142 },
+          { label: '2022', value: 218 },
+          { label: '2023', value: 305 },
+          { label: '2024', value: 396 },
+          { label: '2025', value: 505 },
+          { label: '2026', value: 612 },
+        ]
+      default:
+        return []
+    }
+  }
+
+  let data: Datum[]
+  if (range === 'weekly' && dashboardData) {
+    data = dashboardData.revenue_chart.labels.map((label, index) => ({
+      label,
+      value: dashboardData.revenue_chart.data[index],
+    }))
+  } else {
+    data = getMockData(range)
+  }
 
   const { line, area, points } = useMemo(() => {
-    const max = Math.max(...data.map((m) => m.value)) * 1.1
+    if (data.length === 0) {
+      return { line: '', area: '', points: [] }
+    }
+    const max = Math.max(...data.map((m) => m.value)) * 1.1 || 1
     const stepX = W / (data.length - 1)
     const pts = data.map((m, i) => {
       const x = i * stepX
@@ -174,7 +199,7 @@ export function RevenueChart() {
           >
             <p className="text-[11px] text-muted-foreground">{data[hover].label}</p>
             <p className="font-mono text-sm font-bold text-foreground">
-              {(data[hover].value * 1.07).toFixed(1)}K د.ك
+              {data[hover].value.toFixed(1)} د.ك
             </p>
           </div>
         )}

@@ -1,6 +1,7 @@
-import { ArrowDownRight, ArrowUpRight, Building2, TrendingUp, Users, Wallet } from 'lucide-react'
+import { ArrowDownRight, ArrowUpRight, Building2, TrendingUp, Users, Wallet, Loader2 } from 'lucide-react'
 import { Sparkline } from '@/components/dashboard/sparkline'
 import { cn } from '@/lib/utils'
+import { type DashboardStatsType } from '@/lib/api'
 
 type Stat = {
   title: string
@@ -12,43 +13,55 @@ type Stat = {
   color: string
 }
 
-const stats: Stat[] = [
-  {
-    title: 'إجمالي المبيعات',
-    value: '68,780 د.ك',
-    trend: '+12.5%',
-    icon: Wallet,
-    color: 'var(--primary)',
-    spark: [12, 18, 14, 22, 19, 28, 24, 34, 30, 42],
-  },
-  {
-    title: 'الشركات النشطة',
-    value: '142',
-    trend: '+5.2%',
-    icon: Building2,
-    color: 'var(--accent)',
-    spark: [20, 22, 21, 25, 24, 27, 29, 28, 33, 35],
-  },
-  {
-    title: 'المواهب المستقلة',
-    value: '3,890',
-    trend: '+18.1%',
-    icon: Users,
-    color: 'var(--success)',
-    spark: [8, 12, 16, 14, 20, 26, 24, 32, 38, 46],
-  },
-  {
-    title: 'الوظائف المنجزة',
-    value: '874',
-    trend: '-2.4%',
-    down: true,
-    icon: TrendingUp,
-    color: 'var(--gold)',
-    spark: [40, 38, 42, 36, 39, 33, 35, 30, 32, 28],
-  },
-]
+interface StatsRowProps {
+  data?: DashboardStatsType | null
+}
 
-export function StatsRow() {
+export function StatsRow({ data }: StatsRowProps) {
+  if (!data) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    )
+  }
+
+  const stats: Stat[] = [
+    {
+      title: 'إجمالي المبيعات',
+      value: `${data.stats.total_revenue.toLocaleString('ar-EG')} د.ك`,
+      trend: data.stats.total_revenue_trend,
+      icon: Wallet,
+      color: 'var(--primary)',
+      spark: data.sparklines.revenue,
+    },
+    {
+      title: 'الشركات النشطة',
+      value: data.stats.total_enterprises.toLocaleString('ar-EG'),
+      trend: data.stats.total_enterprises_trend,
+      icon: Building2,
+      color: 'var(--accent)',
+      spark: data.sparklines.enterprises,
+    },
+    {
+      title: 'المواهب المستقلة',
+      value: data.stats.total_students.toLocaleString('ar-EG'),
+      trend: data.stats.total_students_trend,
+      icon: Users,
+      color: 'var(--success)',
+      spark: data.sparklines.students,
+    },
+    {
+      title: 'الوظائف المنجزة',
+      value: data.stats.completed_bookings.toLocaleString('ar-EG'),
+      trend: data.stats.completed_bookings_trend,
+      down: data.stats.completed_bookings_down,
+      icon: TrendingUp,
+      color: 'var(--gold)',
+      spark: data.sparklines.bookings,
+    },
+  ]
+
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
       {stats.map((stat) => {

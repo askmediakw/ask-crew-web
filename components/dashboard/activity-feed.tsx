@@ -3,6 +3,7 @@
 import { UserPlus, Film, CreditCard, CalendarCheck, ShieldAlert, Activity } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useExecMode } from '@/lib/exec-mode'
+import type { DashboardStatsType } from '@/lib/api'
 
 type Tone = 'success' | 'info' | 'gold' | 'danger'
 
@@ -36,9 +37,35 @@ const iconClass: Record<Tone, string> = {
   danger: 'bg-destructive/15 text-destructive',
 }
 
-export function ActivityFeed() {
+// Map tone to icon
+const getIconForTone = (tone: Tone) => {
+  switch (tone) {
+    case 'success':
+      return UserPlus
+    case 'info':
+      return CalendarCheck
+    case 'gold':
+      return Film
+    case 'danger':
+      return ShieldAlert
+    default:
+      return UserPlus
+  }
+}
+
+interface ActivityFeedProps {
+  data?: DashboardStatsType['activity']
+}
+
+export function ActivityFeed({ data = [] }: ActivityFeedProps) {
   const { execMode } = useExecMode()
   const accent = execMode ? 'text-destructive' : 'text-primary'
+
+  // Fallback mock data if no data is provided
+  const feed = data.length > 0 ? data : [
+    { type: 'مستخدم جديد', desc: 'سجّل المستخدم "نورة سالم" حساباً جديداً', status: 'مكتمل', tone: 'success' as Tone, time: 'قبل دقيقتين' },
+    { type: 'رفع محتوى', desc: 'تم رفع فيلم "الإمبراطورية الكبرى" بدقة 4K', status: 'قيد المعالجة', tone: 'gold' as Tone, time: 'قبل 8 دقائق' },
+  ]
 
   return (
     <div className="glass overflow-hidden rounded-2xl border border-border">
@@ -58,7 +85,7 @@ export function ActivityFeed() {
           </thead>
           <tbody>
             {feed.map((item, i) => {
-              const Icon = item.icon
+              const Icon = getIconForTone(item.tone)
               return (
                 <tr key={i} className="border-b border-border/60 transition last:border-0 hover:bg-white/5">
                   <td className="px-5 py-4">

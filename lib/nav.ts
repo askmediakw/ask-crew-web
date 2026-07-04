@@ -58,7 +58,8 @@ export const navItems: NavItem[] = [
   { key: 'rewards', label: 'الجوائز والخصومات', href: '/dashboard/rewards', icon: Award },
   { key: 'tickets', label: 'التذاكر والدعم', href: '/dashboard/tickets', icon: LifeBuoy },
   { key: 'notifications', label: 'الإشعارات', href: '/dashboard/notifications', icon: BellRing },
-  { key: 'analytics', label: 'التحليلات', href: '/dashboard/analytics', icon: BarChart3 },
+  { key: 'siteSettings', label: 'إعدادات الموقع', href: '/dashboard/site-settings', icon: Globe2 },
+ // { key: 'analytics', label: 'التحليلات', href: '/dashboard/analytics', icon: BarChart3 },
    //{ key: 'disputes', label: 'فض النزاعات', href: '/dashboard/disputes', icon: Scale },
     // { key: 'vod', label: 'الفيديو و DRM', href: '/dashboard/vod', icon: Film },
   // { key: 'production', label: 'غرفة عمليات الإنتاج', href: '/dashboard/production', icon: ClipboardList },
@@ -74,6 +75,5 @@ export const navItems: NavItem[] = [
   // { key: 'developer', label: 'إعدادات المطورين', href: '/dashboard/developer', icon: Code2 },
   // { key: 'apiSpecs', label: 'مواصفات الربط', href: '/dashboard/api-specs', icon: FileJson },
   // { key: 'devTools', label: 'أدوات المطورين', href: '/dashboard/dev-tools', icon: Wrench },
-  { key: 'siteSettings', label: 'إعدادات الموقع', href: '/dashboard/site-settings', icon: Globe2 },
-  { key: 'settings', label: 'الإعدادات', href: '/dashboard/settings', icon: Settings },
+ // { key: 'settings', label: 'الإعدادات', href: '/dashboard/settings', icon: Settings },
 ]
